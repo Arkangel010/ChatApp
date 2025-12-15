@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -9,7 +11,7 @@ const port = process.env.PORT || 8000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(cors({ origin: "https://chatapp007.vercel.app" }));
 
 // DB connection
 require("./db/connection");
@@ -20,9 +22,15 @@ const Conversations = require("./models/Conversations");
 const Messages = require("./models/Messeges");
 
 // Create HTTP server and attach Socket.IO
-const io = require("socket.io")(8080, {
-  cors: { origin: "http://localhost:3000" },
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "https://chatapp007.vercel.app", 
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 });
+
 let users = [];
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
@@ -276,6 +284,6 @@ app.get("/api/users/:userId", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log("listening on port " + port);
 });
