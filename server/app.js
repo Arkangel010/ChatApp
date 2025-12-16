@@ -265,6 +265,7 @@ app.get("/api/message/:conversationId", async (req, res) => {
 
 app.get("/api/users/:userId", async (req, res) => {
   try {
+    console.log("hello");
     const userId = req.params.userId;
     const users = await Users.find({ _id: { $ne: userId } });
     const usersData = Promise.all(
